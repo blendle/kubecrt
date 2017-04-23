@@ -8,7 +8,7 @@ import:
   version: ^0.6.2
 - package: gopkg.in/yaml.v2
 - package: k8s.io/helm
-  version: 2.3.0
+  version: ^2.3.1
   subpackages:
   - pkg/chartutil
   - pkg/downloader

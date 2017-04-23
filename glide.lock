@@ -1,5 +1,5 @@
-hash: d0497c8a87e6f357954505acd64ad448298c7fb97d4e34c18129284f61136850
-updated: 2017-04-23T23:12:20.153545873+02:00
+hash: 3ecc76a7b56e18b52eafd50fc6aa66ef35291b8b5f22ba9a7222f2e79813f442
+updated: 2017-04-24T00:56:51.039448011+02:00
 imports:
 - name: github.com/aokoli/goutils
   version: 174f97f737d44ae9a2b687a1a2e2e6cc27c62783
@@ -72,7 +72,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 - name: k8s.io/helm
-  version: d83c245fc324117885ed83afc90ac74afed271b4
+  version: 32562a3040bb5ca690339b9840b6f60f8ce25da4
   subpackages:
   - pkg/chartutil
   - pkg/downloader
