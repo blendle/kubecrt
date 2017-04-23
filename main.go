@@ -23,13 +23,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	c, err := parser.ParseConfig(cfg, opts.ChartsConfigOptions)
+	cc, err := parser.ParseConfig(cfg, opts.ChartsConfigOptions)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "charts config parsing error: \n\n%s\n", err)
 		os.Exit(1)
 	}
 
-	out, err := c.ParseCharts()
+	out, err := cc.ParseCharts()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "chart parsing error: %s\n", err)
 		os.Exit(1)
