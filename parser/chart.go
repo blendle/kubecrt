@@ -9,7 +9,9 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 	"k8s.io/helm/pkg/chartutil"
+	"k8s.io/helm/pkg/downloader"
 	"k8s.io/helm/pkg/engine"
+	"k8s.io/helm/pkg/helm/helmpath"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 	"k8s.io/helm/pkg/timeconv"
 )
@@ -61,6 +63,11 @@ func (c *Chart) ToResources(name, namespace string) ([]byte, error) {
 
 func chartToResources(location, releaseName, namespace, values string) ([]byte, error) {
 	var output string
+
+	location, err := locateChartPath(location, "")
+	if err != nil {
+		return nil, err
+	}
 
 	c, err := chartutil.Load(location)
 	if err != nil {
@@ -120,4 +127,56 @@ func vals(valuesPath string) ([]byte, error) {
 	}
 
 	return yaml.Marshal(base)
+}
+
+func locateChartPath(name, version string) (string, error) {
+	homepath := filepath.Join(os.Getenv("HOME"), ".helm")
+
+	name = strings.TrimSpace(name)
+	version = strings.TrimSpace(version)
+	if _, err := os.Stat(name); err == nil {
+		abs, err := filepath.Abs(name)
+		if err != nil {
+			return abs, err
+		}
+
+		return abs, nil
+	}
+
+	if filepath.IsAbs(name) || strings.HasPrefix(name, ".") {
+		return name, fmt.Errorf("path %q not found", name)
+	}
+
+	crepo := filepath.Join(helmpath.Home(homepath).Repository(), name)
+	if _, err := os.Stat(crepo); err == nil {
+		return filepath.Abs(crepo)
+	}
+
+	dl := downloader.ChartDownloader{
+		HelmHome: helmpath.Home(homepath),
+		Out:      os.Stdout,
+	}
+
+	dest, err := ioutil.TempDir("", "helm-")
+	if err != nil {
+		return "", fmt.Errorf("Failed to untar: %s", err)
+	}
+	defer os.RemoveAll(dest)
+
+	filename, _, err := dl.DownloadTo(name, version, dest)
+	if err != nil {
+		return "", err
+	}
+
+	err = os.MkdirAll(crepo, 0755)
+	if err != nil {
+		return "", fmt.Errorf("Failed to untar (mkdir): %s", err)
+	}
+
+	err = chartutil.ExpandFile(filepath.Dir(crepo), filename)
+	if err != nil {
+		return "", err
+	}
+
+	return crepo, nil
 }
