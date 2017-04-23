@@ -1,0 +1,18 @@
+package: github.com/blendle/kubecrt
+import:
+- package: github.com/blendle/epp
+  version: ^1.1.1
+  subpackages:
+  - epp
+- package: github.com/docopt/docopt-go
+  version: ^0.6.2
+- package: gopkg.in/yaml.v2
+- package: k8s.io/helm
+  version: 2.3.0
+  subpackages:
+  - pkg/chartutil
+  - pkg/downloader
+  - pkg/engine
+  - pkg/getter/defaultgetters
+  - pkg/proto/hapi/chart
+  - pkg/timeconv
