@@ -64,7 +64,7 @@ Here's an example of a project's configuration file:
 ```yaml
 apiVersion: v1
 charts:
-  stable/factorio:
+  stable/factorio:0.2.0:
     resources:
       requests:
         memory: 1024Mi
@@ -85,6 +85,9 @@ For the above example, see here for the default configurations:
 
   * stable/factorio: https://git.io/v9Tyr
   * stable/minecraft: https://git.io/v9Tya
+
+You can optionally pin your chart to a specific version, by appending `:x.y.z`
+to the chart name.
 
 The Chart Configuration file can also contain templated language which is
 processed by [epp](https://github.com/blendle/epp).

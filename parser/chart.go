@@ -53,7 +53,7 @@ func (c *Chart) ToResources(name, namespace string) ([]byte, error) {
 		return nil, err
 	}
 
-	resources, err := chartToResources(c.Location, name, namespace, tmpfile.Name())
+	resources, err := chartToResources(c.Location, c.Version, name, namespace, tmpfile.Name())
 	if err != nil {
 		return nil, err
 	}
@@ -61,10 +61,10 @@ func (c *Chart) ToResources(name, namespace string) ([]byte, error) {
 	return resources, nil
 }
 
-func chartToResources(location, releaseName, namespace, values string) ([]byte, error) {
+func chartToResources(location, version, releaseName, namespace, values string) ([]byte, error) {
 	var output string
 
-	location, err := locateChartPath(location, "")
+	location, err := locateChartPath(location, version)
 	if err != nil {
 		return nil, err
 	}

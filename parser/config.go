@@ -2,7 +2,9 @@ package parser
 
 import (
 	"errors"
+	"strings"
 
+	"github.com/Masterminds/semver"
 	"github.com/blendle/epp/epp"
 	"github.com/blendle/kubecrt/config"
 	yaml "gopkg.in/yaml.v2"
@@ -19,6 +21,7 @@ type ChartsConfiguration struct {
 // Chart ...
 type Chart struct {
 	Location string
+	Version  string
 	Config   interface{}
 }
 
@@ -71,10 +74,19 @@ func NewChartsConfiguration(m map[string]interface{}, opts *config.ChartsConfigO
 
 	charts, _ = m["charts"].(map[interface{}]interface{})
 	for key, config := range charts {
-		location, _ := key.(string)
+		var version, location string
+
+		s, _ := key.(string)
+		p := strings.Split(s, ":")
+		location = p[0]
+		if len(p) > 1 {
+			version, p = p[len(p)-1], p[:len(p)-1]
+			location = strings.Join(p, ":")
+		}
 
 		c := &Chart{
 			Location: location,
+			Version:  version,
 			Config:   config,
 		}
 
@@ -117,6 +129,12 @@ func validateConfig(cc *ChartsConfiguration) error {
 	for _, c := range cc.Charts {
 		if c.Location == "" {
 			return errors.New("Invalid or missing chart name")
+		}
+
+		if c.Version != "" {
+			if _, err := semver.NewVersion(c.Version); err != nil {
+				return errors.New(c.Version + ": " + err.Error())
+			}
 		}
 	}
 
