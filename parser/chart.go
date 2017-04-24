@@ -157,26 +157,15 @@ func locateChartPath(name, version string) (string, error) {
 		Out:      os.Stdout,
 	}
 
-	dest, err := ioutil.TempDir("", "helm-")
-	if err != nil {
-		return "", fmt.Errorf("Failed to untar: %s", err)
-	}
-	defer os.RemoveAll(dest)
-
-	filename, _, err := dl.DownloadTo(name, version, dest)
-	if err != nil {
-		return "", err
-	}
-
-	err = os.MkdirAll(crepo, 0755)
+	err := os.MkdirAll(filepath.Dir(crepo), 0755)
 	if err != nil {
 		return "", fmt.Errorf("Failed to untar (mkdir): %s", err)
 	}
 
-	err = chartutil.ExpandFile(filepath.Dir(crepo), filename)
+	filename, _, err := dl.DownloadTo(name, version, filepath.Dir(crepo))
 	if err != nil {
 		return "", err
 	}
 
-	return crepo, nil
+	return filename, nil
 }
