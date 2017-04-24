@@ -1,2 +1,4 @@
 /kubecrt
 /vendor
+/bin
+/_dist
