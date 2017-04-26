@@ -15,26 +15,20 @@ prep:
 	@mkdir -p _dist
 
 dist: prep
-	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$(TAG)-linux-amd64
-	GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$(TAG)-darwin-amd64
+	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)_$(TAG)_linux_amd64
+	GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)_$(TAG)_darwin_amd64
 
 patch: prep
 	@version=v$(MAJOR).$(MINOR).$$(expr $(PATCH) + 1); \
-	git tag $$version; \
-	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$$version-linux-amd64; \
-	GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$$version-darwin-amd64
+	git tag $$version
 
 minor: prep
 	@version=v$(MAJOR).$$(expr $(MINOR) + 1).0; \
-	git tag $$version; \
-	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$$version-linux-amd64; \
-	GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$$version-darwin-amd64
+	git tag $$version
 
 major: prep
 	@version=v$$(expr $(MAJOR) + 1).0.0; \
-	git tag $$version; \
-	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$$version-linux-amd64; \
-	GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w $(LDFLAGS)" -o _dist/$(BINARY)-$$version-darwin-amd64
+	git tag $$version
 
 push:
 	git push --tags
