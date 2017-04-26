@@ -25,7 +25,8 @@ conditional logic (production vs staging, etc...).
 ## Installation
 
 ```
-go get github.com/blendle/kubecrt
+brew tap blendle/blendle
+brew install kubecrt
 ```
 
 ## Usage
@@ -98,3 +99,26 @@ default name.
 
 epp uses [Pongo2](https://github.com/flosch/pongo2) for its templating
 functionality.
+
+## Releasing new version
+
+```
+make (major|minor|patch)
+git push --tags
+make dist
+open _dist/
+```
+
+Next, go to the [GitHub releases](https://github.com/blendle/kubecrt/releases)
+page, and edit the tag you just push:
+
+* Release title: vx.x.x
+* Describe this release: short description of important changes
+* Attach binaries: drop the files created in `_dist` here
+
+Click "Update release".
+
+Don't forget to update the Homebrew formula, located at
+[blendle/homebrew-blendle][tap].
+
+[tap]: https://github.com/blendle/homebrew-blendle
