@@ -36,7 +36,7 @@ func main() {
 	}
 
 	if cli["--output"] == nil {
-		fmt.Printf(string(out))
+		fmt.Print(string(out))
 		return
 	}
 
