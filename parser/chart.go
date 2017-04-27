@@ -107,11 +107,24 @@ func chartToResources(location, version, releaseName, namespace, values string) 
 		if strings.HasPrefix(b, "_") {
 			continue
 		}
+		if strings.TrimSpace(data) == "" {
+			continue
+		}
+
+		data = strings.TrimSpace(data)
+
+		if !strings.HasPrefix(data, "---\n") {
+			data = "---\n" + data
+		}
+
+		if output != "" {
+			data = "\n\n" + data
+		}
 
 		output = output + data
 	}
 
-	return []byte(output), nil
+	return []byte(strings.Trim(output, "\n") + "\n"), nil
 }
 
 func vals(valuesPath string) ([]byte, error) {
