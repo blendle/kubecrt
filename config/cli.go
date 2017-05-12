@@ -12,11 +12,19 @@ var gitrev = "unknown"
 
 const usage = `kubecrt - convert Helm charts to Kubernetes resources
 
+Given a charts.yml file, compile all the charts with
+the provided template variables and return the
+resulting Kubernetes resource files to STDOUT, or
+write them to a provided file.
+
+Doing this, you can use Kubernetes charts, without
+having to use Helm locally, or Tiller on the server.
+
 Usage:
   kubecrt [options] CHARTS_CONFIG
   kubecrt -h | --help
   kubecrt --version
-  kubecrt --config-docs
+  kubecrt --example-config
 
 Where CHARTS_CONFIG is the location of the YAML file
 containing the Kubernetes Charts configuration.
@@ -25,70 +33,98 @@ Arguments:
   CHARTS_CONFIG           Charts configuration file
 
 Options:
-  -h, --help              Show this message
-  --version               Display the kubecrt version
-  --namespace=<ns>        Sets the .Release.Namespace chart variable, used by
-	                        Charts during compilation
-  -n, --name=<name>       Sets the .Release.Name chart variable, used by charts
-	                        during compilation
-  -o, --output=<path>     Write output to a file, instead of stdout
-  --config-docs           Show extended documentation on the Charts
-                          configuration file
-
+  -h, --help              Show this screen
+  --version               Show version
+  -n NS, --namespace=NS   Set the .Release.Namespace chart variable, used by
+                          Charts during compilation
+  -a NAME, --name=NAME    Set the .Release.Name chart variable, used by charts
+                          during compilation
+  -o, --output PATH       Write output to a file, instead of STDOUT
+  --example-config        Print an example charts.yaml, including extended
+                          documentation on the tunables
 `
 
-// CLI returns the parsed commandline arguments
+// CLI returns the parsed command-line arguments
 func CLI() map[string]interface{} {
 	arguments, err := docopt.Parse(usage, nil, true, "kubecrt "+version+" ("+gitrev+")", true)
 	if err != nil {
 		panic(err)
 	}
 
-	if arguments["--config-docs"].(bool) {
-		generateConfigDocs()
+	if arguments["--example-config"].(bool) {
+		generateExampleConfig()
 		os.Exit(0)
 	}
 
 	return arguments
 }
 
-func generateConfigDocs() {
+func generateExampleConfig() {
 	fmt.Println(docs)
 }
 
 const docs = `
-The Chart Configuration file has the following structure:
+# apiVersion defines the version of the charts.yaml structure. Currently,
+# only "v1" is supported.
+apiVersion: v1
 
-    apiVersion: v1
-    charts:
-      stable/factorio:
-        resources:
-          requests:
-            memory: 1024Mi
-            cpu: 750m
-        factorioServer:
-      	  name: {{ MY_SERVER_NAME | default:"hello world!" }}
+# name is the .Release.Name template value that charts can use in their
+# templates, which can be overridden by the "--name" CLI flag. If omitted,
+# "--name" is required.
+name: my-bundled-apps
 
-      stable/minecraft:
-        minecraftServer:
-          difficulty: hard
+# namespace is the .Release.Namespace template value that charts can use in
+# their templates. Note that since kubecrt does not communicate with
+# Kubernetes in any way, it is up to you to also use this namespace when
+# doing kubectl apply [...]. Can be overridden using "--namespace", see
+# "name" for more details.
+namespace: apps
 
-Each Chart configuration starts with the chart location (a local path, or a
-"Chart Repository" location), followed by the configuration for that chart,
-which overrides the default configuration.
+# charts is an array of chart names/locations that you want to compile into
+# Kubernetes resource files.
+charts:
 
-For the above example, see here for the default configurations:
+# A Chart can either be in the format REPO/NAME, or a PATH to a local chart.
+#
+# If using REPO/FORMAT, kubecrt knows by-default where to locate the
+# "stable" repository, all other repositories require the "repo"
+# configuration (see below).
+- stable/factorio:
+    # config is a map of key/value pairs used when compiling the chart. This
+    # uses the same format as in regular chart "values.yaml" files.
+    #
+    # see: https://git.io/v9Tyr
+    config:
+      resources:
+        requests:
+          memory: 1024Mi
+          cpu: 750m
+      factorioServer:
+        # charts.yaml supports the same templating as chart templates do,
+        # using the "sprig" library.
+        #
+        # see: https://masterminds.github.io/sprig/
+        name: {{ env "MY_SERVER_NAME" | default "hello world!" }}
 
-  * stable/factorio: https://git.io/v9Tyr
-  * stable/minecraft: https://git.io/v9Tya
+- stable/minecraft:
+    # version is a semantic version constraint.
+    #
+    # see: https://github.com/Masterminds/semver#basic-comparisons
+    version: ~> 0.1.0
+    config:
+      minecraftServer:
+        difficulty: hard
 
-The Chart Configuration file can also contain templated language which is
-processed by epp (https://github.com/blendle/epp).
+- opsgoodness/prometheus-operator:
+    # repo is the location of a repositry, if other than "stable". This is
+    # the URL you would normally add using "helm repo add NAME URL".
+    repo: http://charts.opsgoodness.com
+    config:
+      sendAnalytics: false
 
-In  the above example, the "MY_SERVER_NAME" value is expanded using your
-exported environment variables. If none is found, "hello world!" will be the
-default name.
-
-epp uses Pongo2 (https://github.com/flosch/pongo2) for its templating
-functionality.
+# For the above charts, see here for the default configurations:
+#
+#   * stable/factorio: https://git.io/v9Tyr
+#   * stable/minecraft: https://git.io/v9Tya
+#   * opsgoodness/prometheus-operator: https://git.io/v9SAY
 `
