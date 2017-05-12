@@ -2,19 +2,20 @@ package config
 
 import "errors"
 
-// CLIOptions ...
+// CLIOptions contains all the options set through the CLI arguments
 type CLIOptions struct {
-	ChartsConfigPath    string
-	ChartsConfigOptions *ChartsConfigOptions
+	ChartsConfigurationPath    string
+	ChartsConfigurationOptions *ChartsConfigurationOptions
 }
 
-// ChartsConfigOptions ...
-type ChartsConfigOptions struct {
+// ChartsConfigurationOptions contains the CLI options relevant for the charts
+// configuration.
+type ChartsConfigurationOptions struct {
 	Name      string
 	Namespace string
 }
 
-// NewCLIOptions ...
+// NewCLIOptions takes CLI arguments, and returns a CLIOptions struct.
 func NewCLIOptions(cli map[string]interface{}) (*CLIOptions, error) {
 	path, ok := cli["CHARTS_CONFIG"].(string)
 	if !ok {
@@ -25,8 +26,8 @@ func NewCLIOptions(cli map[string]interface{}) (*CLIOptions, error) {
 	namespace, _ := cli["--namespace"].(string)
 
 	c := &CLIOptions{
-		ChartsConfigPath: path,
-		ChartsConfigOptions: &ChartsConfigOptions{
+		ChartsConfigurationPath: path,
+		ChartsConfigurationOptions: &ChartsConfigurationOptions{
 			Name:      name,
 			Namespace: namespace,
 		},

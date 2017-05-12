@@ -7,8 +7,13 @@ import:
 - package: github.com/docopt/docopt-go
   version: ^0.6.2
 - package: gopkg.in/yaml.v2
+- package: k8s.io/client-go
+- package: k8s.io/apimachinery
+- package: k8s.io/apiserver
+- package: k8s.io/kubernetes
+  version: ~1.6.0
 - package: k8s.io/helm
-  version: ^2.3.1
+  version: ^2.4.1
   subpackages:
   - pkg/chartutil
   - pkg/downloader
@@ -16,3 +21,4 @@ import:
   - pkg/getter/defaultgetters
   - pkg/proto/hapi/chart
   - pkg/timeconv
+  - pkg/getter

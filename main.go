@@ -5,27 +5,54 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/blendle/kubecrt/chartsconfig"
 	"github.com/blendle/kubecrt/config"
-	"github.com/blendle/kubecrt/parser"
+	"github.com/blendle/kubecrt/helm"
 )
 
 func main() {
 	cli := config.CLI()
+
 	opts, err := config.NewCLIOptions(cli)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "kubecrt arguments error: \n\n%s\n", err)
 		os.Exit(1)
 	}
 
-	cfg, err := readInput(opts.ChartsConfigPath)
+	cfg, err := readInput(opts.ChartsConfigurationPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "charts config IO error: \n\n%s\n", err)
 		os.Exit(1)
 	}
 
-	cc, err := parser.ParseConfig(cfg, opts.ChartsConfigOptions)
+	if err = helm.Init(); err != nil {
+		fmt.Fprintf(os.Stderr, "error initialising helm: \n\n%s\n", err)
+		os.Exit(1)
+	}
+
+	if err = helm.AddRepository("stable", "https://kubernetes-charts.storage.googleapis.com"); err != nil {
+		fmt.Fprintf(os.Stderr, "error adding repository: \n\n%s\n", err)
+		os.Exit(1)
+	}
+
+	cc, err := chartsconfig.NewChartsConfiguration(cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "charts config parsing error: \n\n%s\n", err)
+		os.Exit(1)
+	}
+
+	name := opts.ChartsConfigurationOptions.Name
+	if name != "" {
+		cc.Name = name
+	}
+
+	namespace := opts.ChartsConfigurationOptions.Namespace
+	if namespace != "" {
+		cc.Name = namespace
+	}
+
+	if err = cc.Validate(); err != nil {
+		fmt.Fprintf(os.Stderr, "charts validation error: \n\n%s\n", err)
 		os.Exit(1)
 	}
 
@@ -40,8 +67,7 @@ func main() {
 		return
 	}
 
-	err = ioutil.WriteFile(cli["--output"].(string), out, 0644)
-	if err != nil {
+	if err = ioutil.WriteFile(cli["--output"].(string), out, 0644); err != nil {
 		fmt.Fprintf(os.Stderr, "output IO error: %s\n", err)
 		os.Exit(1)
 	}

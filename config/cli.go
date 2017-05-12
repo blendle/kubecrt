@@ -94,11 +94,11 @@ charts:
 # repository, all other repositories require the "repo" configuration (see
 # below).
 - stable/factorio:
-    # config is a map of key/value pairs used when compiling the chart. This
+    # values is a map of key/value pairs used when compiling the chart. This
     # uses the same format as in regular chart "values.yaml" files.
     #
     # see: https://git.io/v9Tyr
-    config:
+    values:
       resources:
         requests:
           memory: 1024Mi
@@ -108,14 +108,15 @@ charts:
         # using the "sprig" library.
         #
         # see: https://masterminds.github.io/sprig/
-        name: {{ env "MY_SERVER_NAME" | default "hello world!" }}
+        name: >
+          {{ env "MY_SERVER_NAME" | default "hello world!" }}
 
 - stable/minecraft:
     # version is a semantic version constraint.
     #
     # see: https://github.com/Masterminds/semver#basic-comparisons
     version: ~> 0.1.0
-    config:
+    values:
       minecraftServer:
         difficulty: hard
 
@@ -123,7 +124,7 @@ charts:
     # repo is the location of a repositry, if other than "stable". This is
     # the URL you would normally add using "helm repo add NAME URL".
     repo: http://charts.opsgoodness.com
-    config:
+    values:
       sendAnalytics: false
 
 # For the above charts, see here for the default configurations:
