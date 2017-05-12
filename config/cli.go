@@ -76,19 +76,23 @@ name: my-bundled-apps
 # namespace is the .Release.Namespace template value that charts can use in
 # their templates. Note that since kubecrt does not communicate with
 # Kubernetes in any way, it is up to you to also use this namespace when
-# doing kubectl apply [...]. Can be overridden using "--namespace", see
-# "name" for more details.
+# doing kubectl apply [...]. Can be overridden using "--namespace".  If omitted,
+# "--namespace" is required.
 namespace: apps
 
-# charts is an array of chart names/locations that you want to compile into
-# Kubernetes resource files.
+# charts is an array of charts you want to compile into Kubernetes resource
+# files.
+#
+# A single chart might be used to deploy something simple, like a memcached pod,
+# or something complex, like a full web app stack with HTTP servers, databases,
+# caches, and so on.
 charts:
 
 # A Chart can either be in the format REPO/NAME, or a PATH to a local chart.
 #
-# If using REPO/FORMAT, kubecrt knows by-default where to locate the
-# "stable" repository, all other repositories require the "repo"
-# configuration (see below).
+# If using REPO/NAME, kubecrt knows by-default where to locate the "stable"
+# repository, all other repositories require the "repo" configuration (see
+# below).
 - stable/factorio:
     # config is a map of key/value pairs used when compiling the chart. This
     # uses the same format as in regular chart "values.yaml" files.
