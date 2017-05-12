@@ -1,4 +1,4 @@
-package parser
+package chart
 
 import (
 	"fmt"
@@ -7,34 +7,39 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/blendle/kubecrt/helm"
+
 	yaml "gopkg.in/yaml.v2"
 	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/downloader"
 	"k8s.io/helm/pkg/engine"
+	"k8s.io/helm/pkg/getter"
+	"k8s.io/helm/pkg/helm/environment"
 	"k8s.io/helm/pkg/helm/helmpath"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 	"k8s.io/helm/pkg/timeconv"
 )
 
-// ParseCharts ...
-func (cc *ChartsConfiguration) ParseCharts() ([]byte, error) {
-	var out []byte
+// Chart ...
+type Chart struct {
+	Version  string      `yaml:"version"`
+	Repo     string      `yaml:"repo"`
+	Values   interface{} `yaml:"values"`
+	Location string
+}
 
-	for _, c := range cc.Charts {
-		resources, err := c.ToResources(cc.Name, cc.Namespace)
+// ParseChart ...
+func (c *Chart) ParseChart(name, namespace string) ([]byte, error) {
+	s := strings.Split(c.Location, "/")
+
+	if len(s) == 2 && c.Repo != "" {
+		err := helm.AddRepository(s[0], c.Repo)
 		if err != nil {
 			return nil, err
 		}
-
-		out = append(out, resources...)
 	}
 
-	return out, nil
-}
-
-// ToResources ...
-func (c *Chart) ToResources(name, namespace string) ([]byte, error) {
-	d, err := yaml.Marshal(c.Config)
+	d, err := yaml.Marshal(c.Values)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +58,7 @@ func (c *Chart) ToResources(name, namespace string) ([]byte, error) {
 		return nil, err
 	}
 
-	resources, err := chartToResources(c.Location, c.Version, name, namespace, tmpfile.Name())
+	resources, err := c.compile(name, namespace, tmpfile.Name())
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +66,15 @@ func (c *Chart) ToResources(name, namespace string) ([]byte, error) {
 	return resources, nil
 }
 
-func chartToResources(location, version, releaseName, namespace, values string) ([]byte, error) {
+func (c *Chart) compile(releaseName, namespace, values string) ([]byte, error) {
 	var output string
 
-	location, err := locateChartPath(location, version)
+	location, err := locateChartPath(c.Location, c.Version)
 	if err != nil {
 		return nil, err
 	}
 
-	c, err := chartutil.Load(location)
+	cr, err := chartutil.Load(location)
 	if err != nil {
 		return nil, err
 	}
@@ -89,12 +94,12 @@ func chartToResources(location, version, releaseName, namespace, values string) 
 
 	renderer := engine.New()
 
-	vals, err := chartutil.ToRenderValues(c, config, options)
+	vals, err := chartutil.ToRenderValues(cr, config, options)
 	if err != nil {
 		return nil, err
 	}
 
-	out, err := renderer.Render(c, vals)
+	out, err := renderer.Render(cr, vals)
 	if err != nil {
 		return nil, err
 	}
@@ -165,14 +170,26 @@ func locateChartPath(name, version string) (string, error) {
 		return filepath.Abs(crepo)
 	}
 
+	settings := environment.EnvSettings{
+		Home: helmpath.Home(environment.DefaultHelmHome()),
+	}
+
+	settings.PlugDirs = settings.Home.Plugins()
+
 	dl := downloader.ChartDownloader{
 		HelmHome: helmpath.Home(homepath),
 		Out:      os.Stdout,
+		Getters:  getter.All(settings),
 	}
 
 	err := os.MkdirAll(filepath.Dir(crepo), 0755)
 	if err != nil {
 		return "", fmt.Errorf("Failed to untar (mkdir): %s", err)
+	}
+
+	version, err = helm.GetAcceptableVersion(name, version)
+	if err != nil {
+		return "", fmt.Errorf("Failed to find chart versions: %s", err)
 	}
 
 	filename, _, err := dl.DownloadTo(name, version, filepath.Dir(crepo))
