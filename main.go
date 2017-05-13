@@ -48,7 +48,7 @@ func main() {
 
 	namespace := opts.ChartsConfigurationOptions.Namespace
 	if namespace != "" {
-		cc.Name = namespace
+		cc.Namespace = namespace
 	}
 
 	if err = cc.Validate(); err != nil {
