@@ -5,7 +5,7 @@ MAJOR=`echo $(TAG) | awk -F[v.] '{print $$2}'`
 MINOR=`echo $(TAG) | awk -F[v.] '{print $$3}'`
 PATCH=`echo $(TAG) | awk -F[v.] '{print $$4}'`
 GIT_COMMIT=`git rev-parse --short @`
-LDFLAGS=-X github.com/blendle/kubecrt/config.version=$(VERSION) -X github.com/blendle/kubecrt/config.gitrev=$(GIT_COMMIT)
+LDFLAGS=-X github.com/blendle/kubecrt/config.version=$(TAG) -X github.com/blendle/kubecrt/config.gitrev=$(GIT_COMMIT)
 
 build:
 	mkdir -p bin
