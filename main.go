@@ -24,11 +24,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = helm.AddRepository("stable", "https://kubernetes-charts.storage.googleapis.com"); err != nil {
-		fmt.Fprintf(os.Stderr, "error adding repository: \n\n%s\n", err)
-		os.Exit(1)
-	}
-
 	if cli["--repo"] != nil {
 		for _, r := range strings.Split(cli["--repo"].(string), ",") {
 			p := strings.SplitN(r, "=", 2)
