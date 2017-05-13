@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/blendle/kubecrt/chartsconfig"
 	"github.com/blendle/kubecrt/config"
@@ -12,11 +13,23 @@ import (
 
 func main() {
 	cli := config.CLI()
-
 	opts, err := config.NewCLIOptions(cli)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "kubecrt arguments error: \n\n%s\n", err)
 		os.Exit(1)
+	}
+
+	if cli["--repo"] != nil {
+		for _, r := range strings.Split(cli["--repo"].(string), ",") {
+			p := strings.SplitN(r, "=", 2)
+			repo := strings.TrimSpace(string(p[0]))
+			url := strings.TrimSpace(string(p[1]))
+
+			if err = helm.AddRepository(repo, url); err != nil {
+				fmt.Fprintf(os.Stderr, "error adding repository: \n\n%s\n", err)
+				os.Exit(1)
+			}
+		}
 	}
 
 	cfg, err := readInput(opts.ChartsConfigurationPath)
