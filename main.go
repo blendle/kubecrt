@@ -19,6 +19,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = helm.Init(); err != nil {
+		fmt.Fprintf(os.Stderr, "error initialising helm: \n\n%s\n", err)
+		os.Exit(1)
+	}
+
+	if err = helm.AddRepository("stable", "https://kubernetes-charts.storage.googleapis.com"); err != nil {
+		fmt.Fprintf(os.Stderr, "error adding repository: \n\n%s\n", err)
+		os.Exit(1)
+	}
+
 	if cli["--repo"] != nil {
 		for _, r := range strings.Split(cli["--repo"].(string), ",") {
 			p := strings.SplitN(r, "=", 2)
@@ -35,16 +45,6 @@ func main() {
 	cfg, err := readInput(opts.ChartsConfigurationPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "charts config IO error: \n\n%s\n", err)
-		os.Exit(1)
-	}
-
-	if err = helm.Init(); err != nil {
-		fmt.Fprintf(os.Stderr, "error initialising helm: \n\n%s\n", err)
-		os.Exit(1)
-	}
-
-	if err = helm.AddRepository("stable", "https://kubernetes-charts.storage.googleapis.com"); err != nil {
-		fmt.Fprintf(os.Stderr, "error adding repository: \n\n%s\n", err)
 		os.Exit(1)
 	}
 
