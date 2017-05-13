@@ -108,8 +108,7 @@ charts:
         # using the "sprig" library.
         #
         # see: https://masterminds.github.io/sprig/
-        name: >
-          {{ env "MY_SERVER_NAME" | default "hello world!" }}
+        name: {{ env "MY_SERVER_NAME" | default "hello world!" }}
 
 - stable/minecraft:
     # version is a semantic version constraint.

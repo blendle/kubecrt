@@ -1,5 +1,5 @@
-hash: 6ba5ec65469a702af408d736231297107f1cf8f3ac178ef7073d9450f0242d49
-updated: 2017-05-12T13:41:49.756814804+02:00
+hash: 71506484d94df20d66a5f18dc2fcd9b84f5927abb1111d1dce04167c64c599c5
+updated: 2017-05-13T01:10:40.844842234+02:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -13,7 +13,7 @@ imports:
   subpackages:
   - winterm
 - name: github.com/blendle/epp
-  version: 225bdbacaf52f2d42f2ceaefded96a8ddd08f8fe
+  version: de84831d04e7fd97fe42de190c47fd633162bfeb
   subpackages:
   - epp
 - name: github.com/BurntSushi/toml
@@ -98,8 +98,6 @@ imports:
   version: d6023ce2651d8eafb5c75bb0c7167536102ec9f5
 - name: github.com/facebookgo/symwalk
   version: 42004b9f322246749dd73ad71008b1f3160c0052
-- name: github.com/flosch/pongo2
-  version: 1d0f0d3af150c4a65dfd424d742f7374819e7d29
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-openapi/jsonpointer
@@ -147,8 +145,6 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jonboulle/clockwork
   version: 72f9bd7c4e0c2a40055ab3d0f09654f730cce982
-- name: github.com/juju/errors
-  version: 6f54ff6318409d31ff16261533ce2c8381a4fd5d
 - name: github.com/juju/ratelimit
   version: 77ed1c8a01217656d2080ad51981f6e99adaa177
 - name: github.com/mailru/easyjson
