@@ -23,6 +23,10 @@ func GetAcceptableVersion(name, constraint string) (string, error) {
 		return "", err
 	}
 
+	if len(res) == 0 {
+		return "", fmt.Errorf(`unable to find chart named "%s"`, name)
+	}
+
 	search.SortScore(res)
 
 	if constraint != "" {
@@ -58,7 +62,7 @@ func buildIndex() (*search.Index, error) {
 func applyConstraint(version string, res []*search.Result) ([]*search.Result, error) {
 	constraint, err := semver.NewConstraint(version)
 	if err != nil {
-		return res, fmt.Errorf("an invalid version/constraint format: %s", err)
+		return res, fmt.Errorf("invalid chart version/constraint format: %s", err)
 	}
 
 	data := res[:0]
@@ -67,6 +71,10 @@ func applyConstraint(version string, res []*search.Result) ([]*search.Result, er
 		if err != nil || constraint.Check(v) {
 			data = append(data, r)
 		}
+	}
+
+	if len(data) == 0 {
+		return data, fmt.Errorf("unable to fulfil chart version constraint %s", version)
 	}
 
 	return data, nil

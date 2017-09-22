@@ -187,7 +187,7 @@ func locateChartPath(name, version string) (string, error) {
 
 	version, err = helm.GetAcceptableVersion(name, version)
 	if err != nil {
-		return "", fmt.Errorf("Failed to find chart versions: %s", err)
+		return "", err
 	}
 
 	filename, _, err := dl.DownloadTo(name, version, filepath.Dir(crepo))
