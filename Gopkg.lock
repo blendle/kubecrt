@@ -28,8 +28,8 @@
 [[projects]]
   name = "github.com/blendle/epp"
   packages = ["epp"]
-  revision = "de84831d04e7fd97fe42de190c47fd633162bfeb"
-  version = "v2.0.0-rc1"
+  revision = "f5da9002496df249035fa4823f7ddae7131658c5"
+  version = "v2.0.0-rc2"
 
 [[projects]]
   name = "github.com/docopt/docopt-go"
@@ -118,6 +118,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c78bd312deca6db84ee0fecde691efd7938c39d123d1fab1fbb3217c94e7ea8c"
+  inputs-digest = "15ab45d5a63b2b00f60533b804e5c92dee586fbddeeaae32488b596e9569444b"
   solver-name = "gps-cdcl"
   solver-version = 1
