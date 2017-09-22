@@ -171,10 +171,8 @@ func locateChartPath(name, version string) (string, error) {
 	}
 
 	settings := environment.EnvSettings{
-		Home: helmpath.Home(environment.DefaultHelmHome()),
+		Home: helmpath.Home(environment.DefaultHelmHome),
 	}
-
-	settings.PlugDirs = settings.Home.Plugins()
 
 	dl := downloader.ChartDownloader{
 		HelmHome: helmpath.Home(homepath),

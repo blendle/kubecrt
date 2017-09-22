@@ -8,6 +8,5 @@ import (
 var settings environment.EnvSettings
 
 func init() {
-	settings.Home = helmpath.Home(environment.DefaultHelmHome())
-	settings.PlugDirs = settings.Home.Plugins()
+	settings.Home = helmpath.Home(environment.DefaultHelmHome)
 }
