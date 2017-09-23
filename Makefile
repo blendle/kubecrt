@@ -9,7 +9,7 @@ LDFLAGS=-X github.com/blendle/kubecrt/config.version=$(TAG) -X github.com/blendl
 
 build:
 	mkdir -p bin
-	go build -o bin/$(BINARY)
+	go build -ldflags "$(LDFLAGS)" -o bin/$(BINARY)
 
 prep:
 	@mkdir -p _dist
