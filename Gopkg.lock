@@ -10,14 +10,14 @@
 [[projects]]
   name = "github.com/Masterminds/semver"
   packages = ["."]
-  revision = "517734cc7d6470c0d07130e40fd40bdeb9bcd3fd"
-  version = "v1.3.1"
+  revision = "15d8430ab86497c5c0da827b748823945e1cf1e1"
+  version = "v1.4.0"
 
 [[projects]]
   name = "github.com/Masterminds/sprig"
   packages = ["."]
-  revision = "4c164950cd0a8d3724ddb78982e2c56dc7f47112"
-  version = "v2.13.0"
+  revision = "b217b9c388de2cacde4354c536e520c52c055563"
+  version = "v2.14.1"
 
 [[projects]]
   name = "github.com/aokoli/goutils"
@@ -28,26 +28,14 @@
 [[projects]]
   name = "github.com/blendle/epp"
   packages = ["epp"]
-  revision = "f5da9002496df249035fa4823f7ddae7131658c5"
-  version = "v2.0.0-rc2"
+  revision = "8917de94a1146c42f7ebcdee7ba4fcb52d5f9c56"
+  version = "v2.0.0"
 
 [[projects]]
   name = "github.com/docopt/docopt-go"
   packages = ["."]
   revision = "784ddc588536785e7299f7272f39101f7faccc3f"
   version = "0.6.2"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/facebookgo/atomicfile"
-  packages = ["."]
-  revision = "2de1f203e7d5e386a6833233882782932729f27e"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/facebookgo/symwalk"
-  packages = ["."]
-  revision = "42004b9f322246749dd73ad71008b1f3160c0052"
 
 [[projects]]
   name = "github.com/ghodss/yaml"
@@ -65,19 +53,19 @@
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes/any","ptypes/timestamp"]
-  revision = "130e6b02ab059e7b717a096f397c5b60111cae74"
+  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
 
 [[projects]]
   branch = "master"
   name = "github.com/huandu/xstrings"
   packages = ["."]
-  revision = "d6590c0c31d16526217fa60fbd2067f7afcd78c5"
+  revision = "37469d0c81a7910b49d64a0d308ded4823e90937"
 
 [[projects]]
   name = "github.com/imdario/mergo"
   packages = ["."]
-  revision = "3e95a51e0639b4cf372f2ccf74c86749d747fbdc"
-  version = "0.2.2"
+  revision = "7fe0c75c13abdee74b09fcacef5ea1c6bba6a874"
+  version = "0.2.4"
 
 [[projects]]
   name = "github.com/satori/go.uuid"
@@ -95,29 +83,35 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["cast5","openpgp","openpgp/armor","openpgp/clearsign","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","pbkdf2","scrypt"]
-  revision = "7d9177d70076375b9a59c8fde23d52d9c4a7ecd5"
+  revision = "d585fd2cc9195196078f516b69daff6744ef5e84"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
+  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
 
 [[projects]]
   branch = "master"
   name = "k8s.io/apimachinery"
   packages = ["pkg/version"]
-  revision = "1168e538ea3ccf444854d1fdd5681d2d876680a7"
+  revision = "bc1325710437b54535daa5d6877ca62df7bd76db"
+
+[[projects]]
+  name = "k8s.io/client-go"
+  packages = ["util/homedir"]
+  revision = "78700dec6369ba22221b72770783300f143df150"
+  version = "v6.0.0"
 
 [[projects]]
   name = "k8s.io/helm"
-  packages = ["cmd/helm/search","pkg/chartutil","pkg/downloader","pkg/engine","pkg/getter","pkg/helm/environment","pkg/helm/helmpath","pkg/ignore","pkg/plugin","pkg/proto/hapi/chart","pkg/proto/hapi/version","pkg/provenance","pkg/repo","pkg/resolver","pkg/timeconv","pkg/tlsutil","pkg/urlutil"]
-  revision = "bbc1f71dc03afc5f00c6ac84b9308f8ecb4f39ac"
-  version = "v2.6.1"
+  packages = ["cmd/helm/search","pkg/chartutil","pkg/downloader","pkg/engine","pkg/getter","pkg/helm/environment","pkg/helm/helmpath","pkg/ignore","pkg/plugin","pkg/proto/hapi/chart","pkg/proto/hapi/version","pkg/provenance","pkg/repo","pkg/resolver","pkg/timeconv","pkg/tlsutil","pkg/urlutil","pkg/version"]
+  revision = "8478fb4fc723885b155c924d1c8c410b7a9444e6"
+  version = "v2.7.2"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "15ab45d5a63b2b00f60533b804e5c92dee586fbddeeaae32488b596e9569444b"
+  inputs-digest = "b8600c13cc7208a1b5db60c7feba68f30c4ca87967a2e66c93c21217783e9957"
   solver-name = "gps-cdcl"
   solver-version = 1

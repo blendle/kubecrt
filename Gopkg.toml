@@ -1,7 +1,7 @@
 [[constraint]]
   name = "k8s.io/helm"
-  version = "2.6.1"
+  version = "v2.7.2"
 
 [[constraint]]
   name = "github.com/blendle/epp"
-  version = "2.0.0-rc2"
+  version = "2.0.0"
