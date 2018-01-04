@@ -28,8 +28,8 @@
 [[projects]]
   name = "github.com/blendle/epp"
   packages = ["epp"]
-  revision = "8917de94a1146c42f7ebcdee7ba4fcb52d5f9c56"
-  version = "v2.0.0"
+  revision = "4fffc632ad83289cd79c1ed346e73d46f9b39c90"
+  version = "v2.1.0"
 
 [[projects]]
   name = "github.com/docopt/docopt-go"
@@ -83,19 +83,19 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["cast5","openpgp","openpgp/armor","openpgp/clearsign","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","pbkdf2","scrypt"]
-  revision = "d585fd2cc9195196078f516b69daff6744ef5e84"
+  revision = "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
+  revision = "0e4404da71227dcc02fb1deee803d93e86d08f72"
 
 [[projects]]
   branch = "master"
   name = "k8s.io/apimachinery"
   packages = ["pkg/version"]
-  revision = "bc1325710437b54535daa5d6877ca62df7bd76db"
+  revision = "a463f34d125a31787d2be8b47bcf6370b0cf1bde"
 
 [[projects]]
   name = "k8s.io/client-go"
