@@ -3,6 +3,7 @@ package helm
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"k8s.io/helm/pkg/getter"
 	"k8s.io/helm/pkg/helm/helmpath"
@@ -25,6 +26,10 @@ func Init() error {
 	}
 
 	if err := ensureRepoFileFormat(settings.Home.RepositoryFile()); err != nil {
+		return err
+	}
+
+	if err := ensureUpdatedRepos(settings.Home); err != nil {
 		return err
 	}
 
@@ -84,6 +89,30 @@ func ensureDefaultRepos(home helmpath.Home) error {
 	return nil
 }
 
+func ensureUpdatedRepos(home helmpath.Home) error {
+	f, err := repo.LoadRepositoriesFile(home.RepositoryFile())
+	if err != nil {
+		return err
+	}
+
+	if len(f.Repositories) == 0 {
+		return nil
+	}
+
+	var repos []*repo.ChartRepository
+	for _, cfg := range f.Repositories {
+		r, err := repo.NewChartRepository(cfg, getter.All(settings))
+		if err != nil {
+			return err
+		}
+
+		repos = append(repos, r)
+	}
+
+	updateCharts(repos, home)
+	return nil
+}
+
 func initStableRepo(cacheFile string) (*repo.Entry, error) {
 	c := repo.Entry{
 		Name:  stableRepository,
@@ -102,4 +131,19 @@ func initStableRepo(cacheFile string) (*repo.Entry, error) {
 	}
 
 	return &c, nil
+}
+
+func updateCharts(repos []*repo.ChartRepository, home helmpath.Home) {
+	var wg sync.WaitGroup
+	for _, re := range repos {
+		wg.Add(1)
+		go func(re *repo.ChartRepository) {
+			defer wg.Done()
+			if re.Config.Name == "local" {
+				return
+			}
+			_ = re.DownloadIndexFile(home.Cache())
+		}(re)
+	}
+	wg.Wait()
 }
