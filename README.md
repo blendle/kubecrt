@@ -66,6 +66,7 @@ Options:
   -o PATH, --output=PATH           Write output to a file, instead of STDOUT
   -r NAME=URL, --repo=NAME=URL,... List of NAME=URL pairs of repositories to add
                                    to the index before compiling charts config
+  -p DIR, --partials-dir=DIR       Path from which to load partial templates
   --example-config                 Print an example charts.yaml, including
                                    extended documentation on the tunables
 ```
@@ -144,6 +145,58 @@ charts:
 #   * stable/minecraft: https://git.io/v9Tya
 #   * opsgoodness/prometheus-operator: https://git.io/v9SAY
 ```
+
+## Partial Templates
+
+You can optionally split your `charts.yml` file into multiple chunks, by using
+_partial templates_. This works almost the same way as Helm's support for these
+in charts. See the [Helm documentation][docs] for more details.
+
+To use these partials, you have to set the `--partials-dir` flag when calling
+`kubecrt`, pass it the path to your partials directory, and then use those
+partials in your `charts.yml`.
+
+Example:
+
+**charts.yml**:
+
+```yaml
+apiVersion: v1
+name: my-bundled-apps
+namespace: apps
+charts:
+- stable/factorio:
+    values:
+      resources:
+{{ include "factorio/resources" . | indent 8 }}
+```
+
+**partials/factorio/resources.yml**
+
+```yaml
+{{- define "factorio/resources" -}}
+requests:
+  memory: 1024Mi
+  cpu: 750m
+{{- end -}}
+```
+
+You can then run this as follows:
+
+```
+kubecrt --partials-dir ./partials charts.yml
+```
+
+And the result is a fully-parsed charts printed to stdout.
+
+Some notes:
+
+* you can use subfolders to organise your partials
+* each named `define` has to be uniquely named, or risk being overwritten
+* you can define multiple `define` blocks in a single file
+* the files don't need to be yaml files, you can use any content you need
+
+[docs]: https://github.com/kubernetes/helm/blob/master/docs/chart_template_guide/named_templates.md
 
 ## Releasing new version
 

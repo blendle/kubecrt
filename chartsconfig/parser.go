@@ -2,11 +2,18 @@ package chartsconfig
 
 import (
 	"errors"
+	"html/template"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/Masterminds/semver"
-	"github.com/blendle/epp/epp"
 	"github.com/blendle/kubecrt/chart"
+	"github.com/blendle/kubecrt/config"
 	yaml "gopkg.in/yaml.v2"
+	"k8s.io/helm/pkg/engine"
+	hchart "k8s.io/helm/pkg/proto/hapi/chart"
 )
 
 // ChartsConfiguration ...
@@ -18,14 +25,32 @@ type ChartsConfiguration struct {
 	ChartsList []*chart.Chart
 }
 
-// NewChartsConfiguration initialises a new ChartsConfiguration.
-func NewChartsConfiguration(input []byte) (*ChartsConfiguration, error) {
+// NewChartsConfiguration initializes a new ChartsConfiguration.
+func NewChartsConfiguration(input []byte, tpath string) (*ChartsConfiguration, error) {
 	m := &ChartsConfiguration{}
 
-	out, err := parseEpp(input)
+	renderer := engine.New()
+
+	funcs := template.FuncMap{
+		"env":       func(s string) string { return os.Getenv(s) },
+		"expandenv": func(s string) string { return os.ExpandEnv(s) },
+	}
+
+	for k, v := range funcs {
+		renderer.FuncMap[k] = v
+	}
+
+	t, err := stubChart(input, tpath)
 	if err != nil {
 		return nil, err
 	}
+
+	tpls, err := renderer.Render(t, map[string]interface{}{})
+	if err != nil {
+		return nil, err
+	}
+
+	out := []byte(tpls["kubecrt/charts.yml"])
 
 	if err = yaml.Unmarshal(out, m); err != nil {
 		return nil, err
@@ -94,11 +119,48 @@ func (cc *ChartsConfiguration) Validate() error {
 	return nil
 }
 
-func parseEpp(input []byte) ([]byte, error) {
-	out, err := epp.Parse(input)
+func stubChart(b []byte, partialPath string) (*hchart.Chart, error) {
+	tpls, err := loadTemplates(b, partialPath)
 	if err != nil {
 		return nil, err
 	}
 
-	return out, nil
+	chart := &hchart.Chart{
+		Metadata: &hchart.Metadata{
+			Name: "kubecrt",
+		},
+		Templates: tpls,
+	}
+
+	return chart, nil
+}
+
+func loadTemplates(b []byte, partialPath string) ([]*hchart.Template, error) {
+	tpls := []*hchart.Template{{Data: b, Name: "charts.yml"}}
+
+	if partialPath == config.DefaultPartialTemplatesPath {
+		if _, err := os.Stat(partialPath); os.IsNotExist(err) {
+			return tpls, nil
+		}
+	}
+
+	if partialPath == "" {
+		return tpls, nil
+	}
+
+	err := filepath.Walk(partialPath, func(path string, f os.FileInfo, err error) error {
+		if info, e := os.Stat(path); e == nil && info.IsDir() {
+			return nil
+		}
+
+		content, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		tpls = append(tpls, &hchart.Template{Data: content, Name: strings.Replace(path, partialPath, "", 1)})
+		return nil
+	})
+
+	return tpls, err
 }
