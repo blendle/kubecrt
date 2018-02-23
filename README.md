@@ -67,6 +67,10 @@ Options:
   -r NAME=URL, --repo=NAME=URL,... List of NAME=URL pairs of repositories to add
                                    to the index before compiling charts config
   -p DIR, --partials-dir=DIR       Path from which to load partial templates
+                                   [default: config/deploy/partials]
+  -j, --json                       Print resources formatted as JSON instead of
+                                   YAML. Each resource is printed on a single
+                                   line.
   --example-config                 Print an example charts.yaml, including
                                    extended documentation on the tunables
 ```

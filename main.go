@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/blendle/kubecrt/chartsconfig"
 	"github.com/blendle/kubecrt/config"
 	"github.com/blendle/kubecrt/helm"
+	"github.com/ghodss/yaml"
 )
 
 func main() {
@@ -70,6 +72,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	if opts.OutputJSON {
+		out, err = toJSON(out)
+		if err != nil {
+			fmt.Printf("error converting chart to JSON format: %s\n", err)
+			os.Exit(1)
+		}
+	}
+
 	if cli["--output"] == nil {
 		fmt.Print(string(out))
 		return
@@ -87,4 +97,22 @@ func readInput(input string) ([]byte, error) {
 	}
 
 	return ioutil.ReadFile(input)
+}
+
+func toJSON(input []byte) ([]byte, error) {
+	var err error
+
+	bs := bytes.Split(input, []byte("---"))
+	for i := range bs {
+		if len(bs[i]) == 0 {
+			continue
+		}
+
+		bs[i], err = yaml.YAMLToJSON(bs[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return bytes.Join(bs, []byte("\n")), nil
 }
