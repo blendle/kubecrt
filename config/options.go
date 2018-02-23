@@ -10,6 +10,7 @@ type CLIOptions struct {
 	ChartsConfigurationPath    string
 	PartialTemplatesPath       string
 	ChartsConfigurationOptions *ChartsConfigurationOptions
+	OutputJSON                 bool
 }
 
 // ChartsConfigurationOptions contains the CLI options relevant for the charts
@@ -30,6 +31,7 @@ func NewCLIOptions(cli map[string]interface{}) (*CLIOptions, error) {
 	namespace, _ := cli["--namespace"].(string)
 
 	c := &CLIOptions{
+		OutputJSON:              cli["--json"].(bool),
 		ChartsConfigurationPath: path,
 		ChartsConfigurationOptions: &ChartsConfigurationOptions{
 			Name:      name,
