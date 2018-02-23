@@ -1,11 +1,15 @@
 package chartsconfig
 
 import (
+	"bufio"
+	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/Masterminds/semver"
@@ -53,7 +57,7 @@ func NewChartsConfiguration(input []byte, tpath string) (*ChartsConfiguration, e
 	out := []byte(tpls["kubecrt/charts.yml"])
 
 	if err = yaml.Unmarshal(out, m); err != nil {
-		return nil, err
+		return nil, wrapError(out, err)
 	}
 
 	for _, a := range m.ChartsMap {
@@ -163,4 +167,66 @@ func loadTemplates(b []byte, partialPath string) ([]*hchart.Template, error) {
 	})
 
 	return tpls, err
+}
+
+func wrapError(b []byte, err error) error {
+	var lines []string
+	shortLines := []string{"\n"}
+
+	el, str := errorLine(err)
+
+	scanner := bufio.NewScanner(bytes.NewReader(b))
+	l := 0
+	for scanner.Scan() {
+		l++
+	}
+	ll := len(strconv.Itoa(l))
+
+	i := 1
+	scanner = bufio.NewScanner(bytes.NewReader(b))
+	for scanner.Scan() {
+		line := fmt.Sprintf("%*d: %s", ll, i, scanner.Text())
+
+		// if we know the error line, we create an extra summary of the context
+		// surrounding the error itself, starting 3 lines before, ending 3 after.
+		if el != 0 {
+			if i == el {
+				line = "\x1b[31;1m" + line + "\x1b[0m"
+			}
+
+			if (i >= el-3) && (i <= el+3) {
+				shortLines = append(shortLines, line)
+			}
+		}
+
+		lines = append(lines, line)
+		i++
+	}
+
+	lines = append(lines, shortLines...)
+	lines = append(lines, "\n"+str)
+
+	return errors.New(strings.Join(lines, "\n"))
+}
+
+func errorLine(err error) (int, string) {
+	var i int
+	var p []string
+	str := err.Error()
+
+	println(str)
+
+	if strings.HasPrefix(str, "yaml: ") {
+		p = strings.SplitN(str, ":", 3)
+		i, _ = strconv.Atoi(strings.Replace(p[1], " line ", "", -1))
+		str = strings.TrimSpace(p[2])
+	}
+
+	if strings.HasPrefix(str, "template: test:") {
+		p = strings.SplitN(str, ":", 4)
+		i, _ = strconv.Atoi(p[2])
+		str = strings.TrimSpace(p[3])
+	}
+
+	return i, "Templating error: " + str
 }
