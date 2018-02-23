@@ -43,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cc, err := chartsconfig.NewChartsConfiguration(cfg)
+	cc, err := chartsconfig.NewChartsConfiguration(cfg, opts.PartialTemplatesPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "charts config parsing error: \n\n%s\n", err)
 		os.Exit(1)

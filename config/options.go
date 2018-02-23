@@ -2,9 +2,13 @@ package config
 
 import "errors"
 
+// DefaultPartialTemplatesPath is the default path used for partials.
+const DefaultPartialTemplatesPath = "config/deploy/partials"
+
 // CLIOptions contains all the options set through the CLI arguments
 type CLIOptions struct {
 	ChartsConfigurationPath    string
+	PartialTemplatesPath       string
 	ChartsConfigurationOptions *ChartsConfigurationOptions
 }
 
@@ -31,6 +35,10 @@ func NewCLIOptions(cli map[string]interface{}) (*CLIOptions, error) {
 			Name:      name,
 			Namespace: namespace,
 		},
+	}
+
+	if cli["--partials-dir"] != nil {
+		c.PartialTemplatesPath, _ = cli["--partials-dir"].(string)
 	}
 
 	return c, nil
