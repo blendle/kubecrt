@@ -10,6 +10,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/blendle/kubecrt/chart"
+	"github.com/blendle/kubecrt/config"
 	yaml "gopkg.in/yaml.v2"
 	"k8s.io/helm/pkg/engine"
 	hchart "k8s.io/helm/pkg/proto/hapi/chart"
@@ -119,26 +120,9 @@ func (cc *ChartsConfiguration) Validate() error {
 }
 
 func stubChart(b []byte, partialPath string) (*hchart.Chart, error) {
-	tpls := []*hchart.Template{{Data: []byte(b), Name: "charts.yml"}}
-
-	if partialPath != "" {
-		err := filepath.Walk(partialPath, func(path string, f os.FileInfo, err error) error {
-			if info, err := os.Stat(path); err == nil && info.IsDir() {
-				return nil
-			}
-
-			content, err := ioutil.ReadFile(path)
-			if err != nil {
-				return err
-			}
-
-			tpls = append(tpls, &hchart.Template{Data: content, Name: strings.Replace(path, partialPath, "", 1)})
-			return nil
-		})
-
-		if err != nil {
-			return nil, err
-		}
+	tpls, err := loadTemplates(b, partialPath)
+	if err != nil {
+		return nil, err
 	}
 
 	chart := &hchart.Chart{
@@ -149,4 +133,34 @@ func stubChart(b []byte, partialPath string) (*hchart.Chart, error) {
 	}
 
 	return chart, nil
+}
+
+func loadTemplates(b []byte, partialPath string) ([]*hchart.Template, error) {
+	tpls := []*hchart.Template{{Data: b, Name: "charts.yml"}}
+
+	if partialPath == config.DefaultPartialTemplatesPath {
+		if _, err := os.Stat(partialPath); os.IsNotExist(err) {
+			return tpls, nil
+		}
+	}
+
+	if partialPath == "" {
+		return tpls, nil
+	}
+
+	err := filepath.Walk(partialPath, func(path string, f os.FileInfo, err error) error {
+		if info, e := os.Stat(path); e == nil && info.IsDir() {
+			return nil
+		}
+
+		content, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		tpls = append(tpls, &hchart.Template{Data: content, Name: strings.Replace(path, partialPath, "", 1)})
+		return nil
+	})
+
+	return tpls, err
 }

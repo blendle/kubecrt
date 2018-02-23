@@ -2,6 +2,9 @@ package config
 
 import "errors"
 
+// DefaultPartialTemplatesPath is the default path used for partials.
+const DefaultPartialTemplatesPath = "config/deploy/partials"
+
 // CLIOptions contains all the options set through the CLI arguments
 type CLIOptions struct {
 	ChartsConfigurationPath    string
