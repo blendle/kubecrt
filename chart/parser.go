@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"runtime"
 
 	"github.com/blendle/kubecrt/helm"
 
@@ -15,9 +16,11 @@ import (
 	"k8s.io/helm/pkg/engine"
 	"k8s.io/helm/pkg/getter"
 	"k8s.io/helm/pkg/helm/environment"
+	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/helm/pkg/helm/helmpath"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 	"k8s.io/helm/pkg/timeconv"
+	tversion "k8s.io/helm/pkg/version"
 )
 
 // Chart ...
@@ -92,9 +95,21 @@ func (c *Chart) compile(releaseName, namespace, values string) ([]byte, error) {
 		Namespace: namespace,
 	}
 
+	caps := &chartutil.Capabilities{
+		APIVersions: chartutil.DefaultVersionSet,
+		KubeVersion: &version.Info{
+			Major:     "1",
+			Minor:     "6",
+			GoVersion: runtime.Version(),
+			Compiler:  runtime.Compiler,
+			Platform:  fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
+		},
+		TillerVersion: tversion.GetVersionProto(),
+	}
+
 	renderer := engine.New()
 
-	vals, err := chartutil.ToRenderValues(cr, config, options)
+	vals, err := chartutil.ToRenderValuesCaps(cr, config, options, caps)
 	if err != nil {
 		return nil, err
 	}
