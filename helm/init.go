@@ -12,7 +12,7 @@ import (
 
 const (
 	stableRepository    = "stable"
-	stableRepositoryURL = "https://kubernetes-charts.storage.googleapis.com"
+	stableRepositoryURL = "https://charts.helm.sh/stable/"
 )
 
 // Init makes sure the Helm home path exists and the required subfolders.
