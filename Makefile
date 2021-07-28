@@ -1,6 +1,6 @@
 BINARY=kubecrt
 
-TAG=$(shell git for-each-ref refs/tags --sort=-taggerdate --format='%(refname:short)' --count=1)
+TAG=$(shell git for-each-ref refs/tags --sort=-creatordate --format='%(refname:short)' --count=1)
 MAJOR=`echo $(TAG) | awk -F[v.] '{print $$2}'`
 MINOR=`echo $(TAG) | awk -F[v.] '{print $$3}'`
 PATCH=`echo $(TAG) | awk -F[v.] '{print $$4}'`
