@@ -18,8 +18,8 @@ require (
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
-	gopkg.in/yaml.v2 v2.2.2
-	k8s.io/apimachinery v0.0.0-20190515023456-b74e4c97951f // indirect
+	gopkg.in/yaml.v2 v2.2.4
+	k8s.io/apimachinery v0.15.7 // indirect
 	k8s.io/client-go v11.0.0+incompatible // indirect
 	k8s.io/helm v2.14.0+incompatible
 )
